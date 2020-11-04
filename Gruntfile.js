@@ -27,7 +27,7 @@ module.exports = function(grunt) {
             },
             pages: {
                 options: {
-                    remote: 'git@github.com:mathgeek/election.git',
+                    remote: 'git@github.com:mathgeek/elections.git',
                     branch: 'gh-pages'
                 }
             },
