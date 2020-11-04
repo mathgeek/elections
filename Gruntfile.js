@@ -1,8 +1,18 @@
 module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-build-control');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
     var pkg = require('./package.json');
     grunt.initConfig({
         pkg: pkg,
+        uglify: {
+            options: {
+                banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+            },
+            build: {
+                src: 'src/<%= pkg.name %>.js',
+                dest: 'build/<%= pkg.name %>.min.js'
+            }
+        },
         buildcontrol: {
             options: {
                 dir: 'dist',
@@ -24,4 +34,5 @@ module.exports = function(grunt) {
             }
         }
     });
+    grunt.registerTask('default', ['uglify']);
 };
