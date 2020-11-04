@@ -2,8 +2,14 @@
     <div class="row" ng-if="results.loaded">
         <div class="col-xs-6">
             <h1>Presidential Results</h1>
-            <h3>Races to Watch</h3>
-            <div ng-repeat="result in results.presResults | filter:{raceToWatch: true} | orderBy: 'state'">
+            <h3>Uncalled Close Races</h3>
+            <div ng-repeat="result in results.presResults | filter:{raceToWatch: true} | filter:{cand1: {winner: false}} | orderBy: 'state'">
+                <div ng-style="{'font-weight': result.cand1.winner ? 'bold' : result.pctReporting < 50 ? 'lighter' : 'normal'}">{{result.state}} {{result.pctReporting}}% {{result.ecVotes}}</div>
+                <span ng-style="{'color': result.cand1.candidatePartyCode == 'D' ? 'blue' : result.cand1.candidatePartyCode == 'R' ? 'red' : 'green'}">{{result.cand1.name}}</span> {{result.cand1.vote}} {{result.cand1.votePct}}
+                <span ng-style="{'color': result.cand2.candidatePartyCode == 'D' ? 'blue' : result.cand2.candidatePartyCode == 'R' ? 'red' : 'green'}">{{result.cand2.name}}</span> {{result.cand2.vote}} {{result.cand2.votePct}}
+            </div>
+            <h3>Called Races to Watch</h3>
+            <div ng-repeat="result in results.presResults | filter:{raceToWatch: true} | filter:{cand1: {winner: true}} | orderBy: 'state'">
                 <div ng-style="{'font-weight': result.cand1.winner ? 'bold' : result.pctReporting < 50 ? 'lighter' : 'normal'}">{{result.state}} {{result.pctReporting}}% {{result.ecVotes}}</div>
                 <span ng-style="{'color': result.cand1.candidatePartyCode == 'D' ? 'blue' : result.cand1.candidatePartyCode == 'R' ? 'red' : 'green'}">{{result.cand1.name}}</span> {{result.cand1.vote}} {{result.cand1.votePct}}
                 <span ng-style="{'color': result.cand2.candidatePartyCode == 'D' ? 'blue' : result.cand2.candidatePartyCode == 'R' ? 'red' : 'green'}">{{result.cand2.name}}</span> {{result.cand2.vote}} {{result.cand2.votePct}}
@@ -15,22 +21,22 @@
                 <span ng-style="{'color': result.cand2.candidatePartyCode == 'D' ? 'blue' : result.cand2.candidatePartyCode == 'R' ? 'red' : 'green'}">{{result.cand2.name}}</span> {{result.cand2.vote}} {{result.cand2.votePct}}
             </div>
         </div>
-        <div class="col-xs-6">
+        <!--<div class="col-xs-6">
             <h1>Senatorial Results</h1>
             <div ng-repeat="result in results.senResults | orderBy: 'raceCode'">
                 <div ng-style="{'font-weight': result.cand1.winner ? 'bold' : result.pctReporting < 50 ? 'lighter' : 'normal'}">{{result.raceCode}} {{result.pctReporting}}%</div>
                 <span ng-style="{'color': result.cand1.candidatePartyCode == 'D' ? 'blue' : result.cand1.candidatePartyCode == 'R' ? 'red' : 'green'}">{{result.cand1.name}}</span> {{result.cand1.vote}} {{result.cand1.votePct}}
                 <span ng-style="{'color': result.cand2.candidatePartyCode == 'D' ? 'blue' : result.cand2.candidatePartyCode == 'R' ? 'red' : 'green'}">{{result.cand2.name}}</span> {{result.cand2.vote}} {{result.cand2.votePct}}
             </div>
-        </div>
-        <div class="col-xs-6">
+        </div>-->
+        <!--<div class="col-xs-6">
             <h1>Congressional Results</h1>
             <div ng-repeat="result in results.repResults | orderBy: 'raceCode'">
                 <div ng-style="{'font-weight': result.cand1.winner ? 'bold' : result.pctReporting < 50 ? 'lighter' : 'normal'}">{{result.raceCode}} {{result.pctReporting}}%</div>
                 <span ng-style="{'color': result.cand1.candidatePartyCode == 'D' ? 'blue' : result.cand1.candidatePartyCode == 'R' ? 'red' : 'green'}">{{result.cand1.name}}</span> {{result.cand1.vote}} {{result.cand1.votePct}}
                 <span ng-style="{'color': result.cand2.candidatePartyCode == 'D' ? 'blue' : result.cand2.candidatePartyCode == 'R' ? 'red' : 'green'}">{{result.cand2.name}}</span> {{result.cand2.vote}} {{result.cand2.votePct}}
             </div>
-        </div>
+        </div>-->
         <div class="col-xs-6">
             <h1>Presidential Overview</h1>
             <div><span style="color: blue">{{results.presBopResults.candD.name}}</span> {{results.presBopResults.candD.ec}} {{results.presBopResults.candD.vote}} {{results.presBopResults.candD.votePct}}</div>
