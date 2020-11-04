@@ -2,6 +2,11 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-build-control');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     var pkg = require('./package.json');
+    // Configurable paths for the application
+    var appConfig = {
+        app: 'app',
+        dist: 'dist'
+    };
     grunt.initConfig({
         pkg: pkg,
         uglify: {
@@ -9,8 +14,8 @@ module.exports = function(grunt) {
                 banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
             },
             build: {
-                src: 'src/<%= pkg.name %>.js',
-                dest: 'build/<%= pkg.name %>.min.js'
+                src: 'app/**/*.js',
+                dest: 'dist/app.min.js'
             }
         },
         buildcontrol: {
@@ -22,7 +27,7 @@ module.exports = function(grunt) {
             },
             pages: {
                 options: {
-                    remote: 'git@github.com:<username>/<githubrepo>.git',
+                    remote: 'git@github.com:mathgeek/election.git',
                     branch: 'gh-pages'
                 }
             },

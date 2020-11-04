@@ -1,9 +1,9 @@
 {
-  "name": "angular-seed",
+  "name": "mathgeek-election",
   "private": true,
   "version": "0.0.0",
-  "description": "A starter project for AngularJS",
-  "repository": "https://github.com/angular/angular-seed",
+  "description": "Election",
+  "repository": "https://github.com/mathgeek/election",
   "license": "MIT",
   "dependencies": {
     "angular": "^1.7.5",
