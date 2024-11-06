@@ -64,9 +64,8 @@ angular.module('electionsApp.results', ['ngRoute', 'ngResource'])
     {code:'WV',ecVotes:5},
     {code:'WI',ecVotes:10},
     {code:'WY',ecVotes:3}];
-  var senStates = ['TX','NC'];
-  var repStates = ['TX','NC','KS'];
-  var repRaces = {'KS2': true, 'TX21': true};
+  var senStates = ['TX'];
+  var repRaces = ['KS-2', 'TX-21'];
 
   loadResults();
 
@@ -138,34 +137,29 @@ angular.module('electionsApp.results', ['ngRoute', 'ngResource'])
         });
       });
     });
-    angular.forEach(repStates, function(state){
-      var promise = repResultsService.query({state: state}, {isArray: true}).$promise;
+    angular.forEach(repRaces, function(code){
+      var promise = repResultsService.get({code: code}).$promise;
       repPromises.push(promise);
-      promise.then(function(resp) {
-        angular.forEach(resp, function(race) {
-          var cand1 = race.candidates[0];
-          var cand2 = race.candidates[1];
-          var raceCode = state + race.jurisdictionCode;
-          if (repRaces[raceCode]) {
-            repTempResults.push({
-              raceCode: raceCode,
-              state: race.stateName,
-              totalVote: race.totalVote,
-              pctReporting: race.percentReporting,
-              cand1: {
-                name: cand1.fullName,
-                vote: cand1.voteStr,
-                votePct: cand1.votePercentStr,
-                candidatePartyCode: cand1.candidatePartyCode,
-                winner: cand1.winner
-              },
-              cand2: {
-                name: cand2.fullName,
-                vote: cand2.voteStr,
-                votePct: cand2.votePercentStr,
-                candidatePartyCode: cand2.candidatePartyCode
-              }
-            });
+      promise.then(function(race) {
+        var cand1 = race.candidates[0];
+        var cand2 = race.candidates[1];
+        repTempResults.push({
+          raceCode: code,
+          state: race.stateName,
+          totalVote: race.totalVote,
+          pctReporting: race.percentReporting,
+          cand1: {
+            name: cand1.fullName,
+            vote: cand1.voteStr,
+            votePct: cand1.votePercentStr,
+            candidatePartyCode: cand1.candidatePartyCode,
+            winner: cand1.winner
+          },
+          cand2: {
+            name: cand2.fullName,
+            vote: cand2.voteStr,
+            votePct: cand2.votePercentStr,
+            candidatePartyCode: cand2.candidatePartyCode
           }
         });
       });
@@ -173,12 +167,8 @@ angular.module('electionsApp.results', ['ngRoute', 'ngResource'])
     var presBopPromise = bopResultsService.get({race: 'PG'}).$promise;
     bopPromises.push(presBopPromise);
     presBopPromise.then(function(resp) {
-      var cand1EV = resp.electoralVotes.candidates[0];
-      var cand2EV = resp.electoralVotes.candidates[1];
-      var cand1 = resp.results.candidates[0];
-      var cand2 = resp.results.candidates[1];
-      var candDEV = cand1EV.partyAbbreviation === 'D' ? cand1EV : cand2EV;
-      var candREV = cand1EV.partyAbbreviation === 'R' ? cand1EV : cand2EV;
+      var cand1 = resp.candidates[0];
+      var cand2 = resp.candidates[1];
       var candD = cand1.candidatePartyCode === 'D' ? cand1 : cand2;
       var candR = cand1.candidatePartyCode === 'R' ? cand1 : cand2;
       presBopTempResults.candD = {
@@ -186,57 +176,58 @@ angular.module('electionsApp.results', ['ngRoute', 'ngResource'])
         vote: candD.voteStr,
         votePct: candD.votePercentStr,
         candidatePartyCode: candD.candidatePartyCode,
-        ec: candDEV.votes
+        ec: candD.electoralVotes.votes
       };
       presBopTempResults.candR = {
         name: candR.fullName,
         vote: candR.voteStr,
         votePct: candR.votePercentStr,
         candidatePartyCode: candR.candidatePartyCode,
-        ec: candREV.votes
+        ec: candR.electoralVotes.votes
       };
     });
-    var senBopPromise = bopResultsService.get({race: 'SG'}).$promise;
-    bopPromises.push(senBopPromise);
-    senBopPromise.then(function(resp) {
-      var cand1 = resp.results.candidates[0];
-      var cand2 = resp.results.candidates[1];
-      var candD = cand1.candidatePartyCode === 'D' ? cand1 : cand2;
-      var candR = cand1.candidatePartyCode === 'R' ? cand1 : cand2;
-      senBopTempResults.candD = {
-        name: candD.fullName,
-        gains: resp.bop.gains.Dem,
-        losses: resp.bop.losses.Dem,
-        currentSeats: resp.bop.currentSeats.Dem
-      };
-      senBopTempResults.candR = {
-        name: candR.fullName,
-        gains: resp.bop.gains.Rep,
-        losses: resp.bop.losses.Rep,
-        currentSeats: resp.bop.currentSeats.Rep
-      };
-    });
-    var repBopPromise = bopResultsService.get({race: 'HG'}).$promise;
-    bopPromises.push(repBopPromise);
-    repBopPromise.then(function(resp) {
-      var cand1 = resp.results.candidates[0];
-      var cand2 = resp.results.candidates[1];
-      var candD = cand1.candidatePartyCode === 'D' ? cand1 : cand2;
-      var candR = cand1.candidatePartyCode === 'R' ? cand1 : cand2;
-      repBopTempResults.candD = {
-        name: candD.fullName,
-        gains: resp.bop.gains.Dem,
-        losses: resp.bop.losses.Dem,
-        currentSeats: resp.bop.currentSeats.Dem
-      };
-      repBopTempResults.candR = {
-        name: candR.fullName,
-        gains: resp.bop.gains.Rep,
-        losses: resp.bop.losses.Rep,
-        currentSeats: resp.bop.currentSeats.Rep
-      };
-    });
-    $q.all(presPromises.concat(senPromises, repPromises, bopPromises)).then(function () {
+    // var senBopPromise = bopResultsService.get({race: 'SG'}).$promise;
+    // bopPromises.push(senBopPromise);
+    // senBopPromise.then(function(resp) {
+    //   console.log(resp);
+    //   var cand1 = resp.candidates[0];
+    //   var cand2 = resp.candidates[1];
+    //   var candD = cand1.candidatePartyCode === 'D' ? cand1 : cand2;
+    //   var candR = cand1.candidatePartyCode === 'R' ? cand1 : cand2;
+    //   senBopTempResults.candD = {
+    //     name: candD.fullName,
+    //     gains: resp.bop.gains.Dem,
+    //     losses: resp.bop.losses.Dem,
+    //     currentSeats: resp.bop.currentSeats.Dem
+    //   };
+    //   senBopTempResults.candR = {
+    //     name: candR.fullName,
+    //     gains: resp.bop.gains.Rep,
+    //     losses: resp.bop.losses.Rep,
+    //     currentSeats: resp.bop.currentSeats.Rep
+    //   };
+    // });
+    // var repBopPromise = bopResultsService.get({race: 'HG'}).$promise;
+    // bopPromises.push(repBopPromise);
+    // repBopPromise.then(function(resp) {
+    //   var cand1 = resp.results.candidates[0];
+    //   var cand2 = resp.results.candidates[1];
+    //   var candD = cand1.candidatePartyCode === 'D' ? cand1 : cand2;
+    //   var candR = cand1.candidatePartyCode === 'R' ? cand1 : cand2;
+    //   repBopTempResults.candD = {
+    //     name: candD.fullName,
+    //     gains: resp.bop.gains.Dem,
+    //     losses: resp.bop.losses.Dem,
+    //     currentSeats: resp.bop.currentSeats.Dem
+    //   };
+    //   repBopTempResults.candR = {
+    //     name: candR.fullName,
+    //     gains: resp.bop.gains.Rep,
+    //     losses: resp.bop.losses.Rep,
+    //     currentSeats: resp.bop.currentSeats.Rep
+    //   };
+    // });
+    $q.all(presPromises.concat(senPromises, repPromises)).then(function () {
       ctrl.presResults = presTempResults;
       ctrl.senResults = senTempResults;
       ctrl.repResults = repTempResults;
@@ -250,25 +241,33 @@ angular.module('electionsApp.results', ['ngRoute', 'ngResource'])
 }])
 
 .factory('presResultsService', ['$resource', function($resource) {
-  return $resource('https://politics-elex-results.data.api.cnn.io/results/view/2020-PG-:state.json', {
+  return $resource('https://politics.api.cnn.io/results/race/2024-PG-:state.json', {
     state: '@state'
+  }, {
+    get: {method: 'GET', headers: { 'X-Api-Key': 'TtGlrrOrcdJNvE5U9t4XulVZuwk68Ecru3UIgtnr' }}
   });
 }])
 
 .factory('senResultsService', ['$resource', function($resource) {
-  return $resource('https://politics-elex-results.data.api.cnn.io/results/view/2020-SG-:state.json', {
+  return $resource('https://politics.api.cnn.io/results/race/2024-SG-:state.json', {
     state: '@state'
+  }, {
+    get: {method: 'GET', headers: { 'X-Api-Key': 'TtGlrrOrcdJNvE5U9t4XulVZuwk68Ecru3UIgtnr' }}
   });
 }])
 
 .factory('repResultsService', ['$resource', function($resource) {
-  return $resource('https://politics-elex-results.data.api.cnn.io/results/view/2020-district-races-:state.json', {
-    state: '@state'
+  return $resource('https://politics.api.cnn.io/results/race/2024-HG-:code.json', {
+    code: '@code'
+  }, {
+    get: {method: 'GET', headers: { 'X-Api-Key': 'TtGlrrOrcdJNvE5U9t4XulVZuwk68Ecru3UIgtnr' }}
   });
 }])
 
 .factory('bopResultsService', ['$resource', function($resource) {
-  return $resource('https://politics-elex-results.data.api.cnn.io/results/view/2020-balance-of-power-:race.json', {
+  return $resource('https://politics.api.cnn.io/results/race/2024-:race-US.json', {
     race: '@race'
+  }, {
+    get: {method: 'GET', headers: { 'X-Api-Key': 'TtGlrrOrcdJNvE5U9t4XulVZuwk68Ecru3UIgtnr' }}
   });
 }]);

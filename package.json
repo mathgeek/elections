@@ -8,8 +8,8 @@
   "dependencies": {
     "angular": "^1.7.5",
     "angular-loader": "^1.7.5",
-    "angular-route": "^1.7.5",
     "angular-resource": "^1.7.5",
+    "angular-route": "^1.7.5",
     "html5-boilerplate": "0.0.1"
   },
   "devDependencies": {
